@@ -1,0 +1,19 @@
+{
+    "users": [
+        {
+        "name": "Alicia",
+        "telephone": 3125489675,
+        "email": "alicia@gmail.com",
+        "password": "password123",
+        "rol": "admin"
+    },
+
+    {
+        "name": "Marcos",
+        "telephone": 3159876543,
+        "email": "marcos@gmail.com",
+        "password": "password12345",
+        "rol": "user"
+    }
+]
+}

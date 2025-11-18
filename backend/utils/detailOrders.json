@@ -1,0 +1,17 @@
+{
+"details": [
+    {
+        "productName": "Torta de chocolate",
+        "orderClientName": "Cliente Uno",
+        "cantidad": 2,
+        "subtotal": 51
+    },
+    
+    {
+        "productName": "Café Americano",
+        "orderClientName": "Cliente Dos",
+        "cantidad": 1,
+        "subtotal": 5 
+    }
+]
+}

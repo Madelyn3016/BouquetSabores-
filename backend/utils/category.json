@@ -1,0 +1,14 @@
+{
+"categories": [
+    {
+        "name": "Postres",
+        "description": "Dulces y tortas",
+        "userEmail": "alicia@gmail.com"
+    },
+
+    {
+        "name": "Bebidas",
+        "description": "Frías y calientes",
+        "userEmail": "marcos@gmail.com" }
+]
+}

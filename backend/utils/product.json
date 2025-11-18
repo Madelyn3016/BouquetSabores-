@@ -1,0 +1,24 @@
+{
+    "products": [
+        
+    {
+        "name": "Torta de chocolate",
+        "description": "Bizcocho húmedo con cacao",
+        "price": 25.5,
+        "stock": 10,
+        "image": "",
+        "userEmail": "alicia@gmail.com",
+        "categoryName": "Postres"
+    },
+
+    {
+        "name": "Café Americano", 
+        "description": "Taza de café caliente",
+        "price": 5,
+        "stock": 50,
+        "image": "",
+        "userEmail": "marcos@gmail.com",
+        "categoryName": "Bebidas"
+    }
+    ]
+}
