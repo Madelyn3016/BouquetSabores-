@@ -35,7 +35,7 @@ export class DataLoaderInitial implements OnModuleInit {
       await queryRunner.connect();
       await queryRunner.startTransaction();
       try {
-        const filePath = path.resolve(__dirname, '..', 'utils', 'user.json');
+        const filePath = path.resolve(__dirname, 'utils', 'user.json');
         const rawData = fs.readFileSync(filePath, 'utf-8');
         const parsed = JSON.parse(rawData) as
           | Array<{ name: string; telephone: string | number; email: string; password: string; rol: string }>
@@ -147,7 +147,7 @@ export class DataLoaderInitial implements OnModuleInit {
 
   private readJsonArray(fileName: string, key: string, fallback: any[]): any[] {
     try {
-      const filePath = path.resolve(__dirname, '..', 'utils', fileName);
+      const filePath = path.resolve(__dirname, 'utils', fileName);
       if (!fs.existsSync(filePath)) return fallback;
       const raw = fs.readFileSync(filePath, 'utf-8');
       const parsed = JSON.parse(raw);
