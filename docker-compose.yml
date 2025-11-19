@@ -4,12 +4,12 @@ services:
   # Base de datos PostgreSQL
   postgres:
     image: postgres:15-alpine
-    container_name: mujeres_digitales_db
+    container_name: bouquet_sabores_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME:-mujeresdigitales}
+      POSTGRES_DB: ${DB_NAME:-bouquetsabores}
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
@@ -27,7 +27,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: mujeres_digitales_backend
+    container_name: bouquet_sabores_backend
     restart: unless-stopped
     ports:
       - "${PORT:-3000}:3000"
@@ -38,7 +38,7 @@ services:
       DB_PORT: 5432
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_NAME: ${DB_NAME:-mujeresdigitales}
+      DB_NAME: ${DB_NAME:-bouquetsabores}
       JWT_SECRET: ${JWT_SECRET:-your_jwt_secret_key_change_in_production}
     depends_on:
       postgres:
@@ -46,7 +46,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

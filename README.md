@@ -380,7 +380,7 @@ ProyectoMujeresDigitales/
    ```env
    DB_USER=postgres
    DB_PASSWORD=tu_contraseña_segura
-   DB_NAME=mujeresdigitales
+   DB_NAME=bouquetSabores
    DB_PORT=5432
    PORT=3000
    JWT_SECRET=tu_clave_secreta_jwt_muy_segura_cambiar_en_produccion
@@ -515,12 +515,12 @@ docker-compose up --build
 
 #### Acceder al contenedor del backend
 ```bash
-docker exec -it mujeres_digitales_backend sh
+docker exec -it bouquet_sabores_backend sh
 ```
 
 #### Acceder a PostgreSQL desde el host
 ```bash
-psql -h localhost -p 5432 -U postgres -d mujeresdigitales
+psql -h localhost -p 5432 -U postgres -d bouquetsabores
 # (contraseña desde .env)
 ```
 
@@ -542,7 +542,7 @@ Para despliegue en producción, considera:
 
 4. **Backups de base de datos:**
    ```bash
-   docker exec mujeres_digitales_db pg_dump -U postgres mujeresdigitales > backup.sql
+   docker exec bouquet_sabores_db pg_dump -U postgres bouquetsabores > backup.sql
    ```
 
 5. **Monitoreo:**
