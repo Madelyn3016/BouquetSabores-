@@ -3,11 +3,16 @@
 
 Se ofrecerá un e-commerce que permitirá a los clientes comprar tortas personalizadas, postres y arreglos florales de manera online, con opción de entrega a domicilio o recogida en tienda.
 
+## 🎯 Objetivo del API
+Proporcionar un backend REST seguro y escalable para:
+- Gestionar usuarios y autenticación con JWT + roles.
+- Administrar productos y categorías (inventario).
+- Procesar órdenes y sus detalles (detalle de ítems comprados).
+- Servir datos limpios y validados para un frontend (e-commerce / panel admin).
+
 ## Actividades principales
 
 - Catálogo digital de productos (flores y pasteles).
-
-- Carrito de compras y pagos en línea.
 
 - Gestión de pedidos y entregas.
 
@@ -50,6 +55,17 @@ Se ofrecerá un e-commerce que permitirá a los clientes comprar tortas personal
 	 ```
 
 La API estará disponible en `http://localhost:3000` (o el puerto que definas).
+
+## 👥 Roles del Equipo (Ejemplo)
+| Integrante | Rol | Responsabilidades |
+|------------|-----|-------------------|
+| Nombre 1 | Backend Auth | Módulo auth, guards, JWT |
+| Nombre 2 | Productos | CRUD productos y categorías |
+| Nombre 3 | Órdenes | Lógica de órdenes y detalles |
+| Nombre 4 | QA / Testing | Pruebas unitarias, e2e y cobertura |
+| Nombre 5 | DevOps | Scripts, entornos y despliegue |
+
+> Sustituir por nombres reales. Añadir más filas si aplica.
 
 ## 🌱 Variables de entorno requeridas
 
@@ -245,4 +261,55 @@ Reemplaza `<JWT_TOKEN>` por el token recibido al hacer login.
 	DELETE /orders/:id
 	Authorization: Bearer <JWT_TOKEN>
 	```
+
+---
+
+## 🧪 Pruebas Unitarias y Evidencias
+
+### Alcance de las pruebas implementadas
+Se cubrieron pruebas unitarias (Jest) para los servicios principales:
+- `UserService`
+- `ProductService`
+- `CategoryService`
+- `OrdersService`
+- `DetailOrdersService`
+
+Cada prueba valida:
+- Creación de entidad (create)
+- Lectura individual y listados (findOne / findAll)
+- Actualización (update)
+- Eliminación lógica (remove) y retorno de mensaje
+- Manejo de errores (NotFound / Conflict)
+
+### Resultado de la última ejecución (ejemplo)
+```
+Test Suites: 6 passed, 6 total
+Tests:       37 passed, 37 total
+Coverage (global): ~28% líneas
+Servicios individuales: >80% líneas cubiertas
+Controladores: 0% (pendiente cubrir con pruebas e2e)
+```
+
+### Próximos pasos recomendados
+- Añadir pruebas e2e para autenticación y flujo completo de compra.
+- Cubrir controladores con tests unitarios (mock de servicios) o e2e para aumentar cobertura global.
+- Verificar validaciones en DTOs y guards (roles/auth).
+- Añadir pruebas de seguridad básica (accesos no autorizados / JWT inválido).
+
+### Comandos clave
+```bash
+npm run test        # Pruebas unitarias
+npm run test:e2e    # Pruebas end-to-end
+npm run test:cov    # Reporte de cobertura
+```
+
+---
+
+## 📌 Notas finales
+- Mantener las variables de entorno seguras (no subir `.env` con credenciales reales).
+- Para entorno de pruebas separar BD: `DB_NAME=bouquet_sabores_test`.
+- Documentar nuevos endpoints al agregarlos.
+
+---
+> Este README es vivo: actualizar roles, endpoints y resultados de pruebas conforme evoluciona el proyecto.
 
