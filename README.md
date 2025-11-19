@@ -19,13 +19,13 @@ Proporcionar un backend REST seguro y escalable para:
 - Panel administrativo para manejar inventario.
 
 
-### Entidades con las que cuenta el sistema
+### Entidades del sistema
 
-- Producto (Prdouct)
-- Compra (Order)
-- Detalle_compra (Detail_Orders)
-- Categoria (Category)
-- Usuarios (Users)
+- Producto (`Product`)
+- Orden / Compra (`Order`)
+- Detalle de Orden (`DetailOrders`)
+- Categoría (`Category`)
+- Usuario (`User`)
 
 
 ## 🚀 Instrucciones para ejecutar la API
@@ -56,16 +56,43 @@ Proporcionar un backend REST seguro y escalable para:
 
 La API estará disponible en `http://localhost:3000` (o el puerto que definas).
 
-## 👥 Roles del Equipo (Ejemplo)
-| Integrante | Rol | Responsabilidades |
-|------------|-----|-------------------|
-| Nombre 1 | Backend Auth | Módulo auth, guards, JWT |
-| Nombre 2 | Productos | CRUD productos y categorías |
-| Nombre 3 | Órdenes | Lógica de órdenes y detalles |
-| Nombre 4 | QA / Testing | Pruebas unitarias, e2e y cobertura |
-| Nombre 5 | DevOps | Scripts, entornos y despliegue |
+## 📖 Documentación Swagger
 
-> Sustituir por nombres reales. Añadir más filas si aplica.
+La API incluye documentación interactiva generada automáticamente con Swagger/OpenAPI.
+
+### Acceso a la documentación
+Una vez iniciado el servidor, accede a:
+```
+http://localhost:3000/api/docs
+```
+
+### Características de la documentación
+- **Interfaz interactiva**: Prueba todos los endpoints directamente desde el navegador.
+- **Esquemas de datos**: Visualiza los DTOs con ejemplos y validaciones.
+- **Autenticación**: Usa el botón "Authorize" para ingresar tu token JWT (formato: `Bearer <tu_token>`).
+- **Agrupación por módulos**: Los endpoints están organizados por tags (auth, users, products, categories, orders, detail-orders).
+- **Respuestas documentadas**: Códigos de estado HTTP y descripciones de errores.
+
+### Flujo de uso típico
+1. Registra un usuario en `POST /auth/register` o inicia sesión en `POST /auth/login`.
+2. Copia el `access_token` devuelto.
+3. Haz clic en el botón **"Authorize"** (candado verde en la esquina superior derecha).
+4. Pega el token en el campo `Value` y haz clic en "Authorize".
+5. Ahora puedes probar los endpoints protegidos directamente desde Swagger.
+
+### Ejemplo: Probar un endpoint protegido
+```http
+# Desde Swagger UI, después de autorizar:
+GET /product
+Authorization: Bearer <token_se_añade_automáticamente>
+```
+
+### Exportar documentación
+Puedes acceder al JSON de OpenAPI en:
+```
+http://localhost:3000/api/docs-json
+```
+
 
 ## 🌱 Variables de entorno requeridas
 
@@ -264,51 +291,71 @@ Reemplaza `<JWT_TOKEN>` por el token recibido al hacer login.
 
 ---
 
-## 🧪 Pruebas Unitarias y Evidencias
+## 🧪 Estrategia de Testing
 
-### Alcance de las pruebas implementadas
-Se cubrieron pruebas unitarias (Jest) para los servicios principales:
-- `UserService`
-- `ProductService`
-- `CategoryService`
-- `OrdersService`
-- `DetailOrdersService`
+Se implementó una batería de pruebas unitarias con Jest para servicios y controladores usando el patrón de mocks y `TestingModule` de NestJS.
 
-Cada prueba valida:
-- Creación de entidad (create)
-- Lectura individual y listados (findOne / findAll)
-- Actualización (update)
-- Eliminación lógica (remove) y retorno de mensaje
-- Manejo de errores (NotFound / Conflict)
-
-### Resultado de la última ejecución (ejemplo)
+### Cobertura actual (última ejecución)
 ```
-Test Suites: 6 passed, 6 total
-Tests:       37 passed, 37 total
-Coverage (global): ~28% líneas
-Servicios individuales: >80% líneas cubiertas
-Controladores: 0% (pendiente cubrir con pruebas e2e)
+Test Suites: 11 passed, 11 total
+Tests:       68 passed, 68 total
+Coverage líneas global: 59.75%
+
+Servicios principales (>80% líneas): User, Product, Category, Orders, DetailOrders
+Controladores: 96%+ en módulos CRUD
+Pendiente: AuthService, AppModule, main bootstrap, guards avanzados, middleware
 ```
 
-### Próximos pasos recomendados
-- Añadir pruebas e2e para autenticación y flujo completo de compra.
-- Cubrir controladores con tests unitarios (mock de servicios) o e2e para aumentar cobertura global.
-- Verificar validaciones en DTOs y guards (roles/auth).
-- Añadir pruebas de seguridad básica (accesos no autorizados / JWT inválido).
+### Técnicas utilizadas
+- Mocks de repositorios (inyección con `getRepositoryToken` en servicios).
+- Stubs de Guards con `overrideGuard(AuthGuard).useValue({ canActivate: () => true })` para evitar dependencia de JWT en pruebas unitarias.
+- Aserciones que excluyen datos sensibles (remoción de `password` en respuestas de controlador).
+- DTOs verificados con `ValidationPipe` en controladores.
 
-### Comandos clave
+### Ejemplo de override de Guards
+```ts
+const module = await Test.createTestingModule({ controllers: [UserController], providers: [ { provide: UserService, useValue: mock } ] })
+	.overrideGuard(AuthGuard)
+	.useValue({ canActivate: () => true })
+	.overrideGuard(RolesGuard)
+	.useValue({ canActivate: () => true })
+	.compile();
+```
+
+### Próximos pasos sugeridos
+- Añadir pruebas negativas: emails duplicados (Conflict), entidades inexistentes (NotFound), acceso no autorizado.
+- Pruebas e2e completas: registro -> login -> flujo de creación de orden con detalles.
+- Cobertura de `AuthService` y `auth.controller` (emisión y validación de tokens).
+- Pruebas de roles (admin vs user) con tokens reales en e2e.
+- Verificar y cubrir decorators personalizados (`matchPassword`).
+
+### Comandos Testing
 ```bash
-npm run test        # Pruebas unitarias
-npm run test:e2e    # Pruebas end-to-end
-npm run test:cov    # Reporte de cobertura
+npm run test      # Unit tests
+npm run test:cov  # Cobertura
+npm run test:e2e  # End-to-end (usa .env.test)
 ```
+
+### Entorno de pruebas (.env.test recomendado)
+Crear `backend/.env.test`:
+```env
+DB_NAME=bouquet_sabores_test
+DB_PASSWORD=tu_password
+DB_USER=tu_usuario
+DB_HOST=localhost
+DB_PORT=5432
+JWT_SECRET=clave_de_pruebas_segura
+PORT=3001
+```
+En modo test se usa `dropSchema=true` para limpiar la base entre ejecuciones.
 
 ---
 
 ## 📌 Notas finales
-- Mantener las variables de entorno seguras (no subir `.env` con credenciales reales).
-- Para entorno de pruebas separar BD: `DB_NAME=bouquet_sabores_test`.
-- Documentar nuevos endpoints al agregarlos.
+- No subir archivos `.env` con credenciales reales.
+- Separar BD de desarrollo y pruebas para evitar contaminación de datos.
+- Actualizar este README cuando se agreguen endpoints, módulos o cambie la cobertura.
+- Considerar agregar CI (GitHub Actions) para ejecutar `npm run test:cov` en cada push.
 
 ---
 > Este README es vivo: actualizar roles, endpoints y resultados de pruebas conforme evoluciona el proyecto.
