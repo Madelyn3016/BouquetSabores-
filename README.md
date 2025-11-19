@@ -351,11 +351,212 @@ En modo test se usa `dropSchema=true` para limpiar la base entre ejecuciones.
 
 ---
 
+## 🐳 Despliegue con Docker
+
+El proyecto incluye configuración completa de Docker para facilitar el despliegue y garantizar consistencia entre entornos.
+
+### Estructura de archivos Docker
+```
+ProyectoMujeresDigitales/
+├── docker-compose.yml          # Orquestación de servicios
+├── .env.example                # Plantilla de variables de entorno
+└── backend/
+    ├── Dockerfile              # Imagen del backend NestJS
+    └── .dockerignore           # Archivos excluidos del build
+```
+
+### Requisitos previos
+- Docker Engine 20.10+
+- Docker Compose v2.0+
+
+### Configuración inicial
+
+1. **Copia el archivo de variables de entorno:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edita `.env` con tus credenciales:**
+   ```env
+   DB_USER=postgres
+   DB_PASSWORD=tu_contraseña_segura
+   DB_NAME=mujeresdigitales
+   DB_PORT=5432
+   PORT=3000
+   JWT_SECRET=tu_clave_secreta_jwt_muy_segura_cambiar_en_produccion
+   ```
+
+### Comandos Docker
+
+#### Construir y levantar todos los servicios
+```bash
+docker-compose up --build
+```
+
+#### Levantar en segundo plano (detached mode)
+```bash
+docker-compose up -d
+```
+
+#### Ver logs en tiempo real
+```bash
+docker-compose logs -f
+docker-compose logs -f backend  # Solo logs del backend
+docker-compose logs -f postgres # Solo logs de PostgreSQL
+```
+
+#### Detener servicios
+```bash
+docker-compose down
+```
+
+#### Detener y eliminar volúmenes (⚠️ borra la base de datos)
+```bash
+docker-compose down -v
+```
+
+#### Reconstruir solo el backend
+```bash
+docker-compose up --build backend
+```
+
+### Servicios incluidos
+
+#### 🗄️ PostgreSQL (postgres)
+- **Imagen:** `postgres:15-alpine`
+- **Puerto:** `5432` (configurable con `DB_PORT`)
+- **Volumen persistente:** `postgres_data`
+- **Health check:** Verifica disponibilidad cada 10s
+
+#### 🚀 Backend NestJS (backend)
+- **Build:** Multi-stage (builder + production)
+- **Puerto:** `3000` (configurable con `PORT`)
+- **Dependencias:** Espera a que PostgreSQL esté saludable
+- **Health check:** Endpoint `/health` verificado cada 30s
+
+### Arquitectura del Dockerfile
+
+El `Dockerfile` utiliza un build multi-etapa para optimizar tamaño:
+
+1. **Etapa Builder:**
+   - Instala todas las dependencias (incluidas devDependencies)
+   - Compila TypeScript a JavaScript
+   - Genera el directorio `dist/`
+
+2. **Etapa Production:**
+   - Instala solo dependencias de producción
+   - Copia el build compilado desde la etapa anterior
+   - Ejecuta con `node dist/main` (sin ts-node)
+
+**Tamaño estimado de imagen:** ~180MB (vs ~800MB sin multi-stage)
+
+### Acceso a los servicios
+
+Una vez levantados los contenedores:
+
+- **API REST:** http://localhost:3000
+- **Documentación Swagger:** http://localhost:3000/api/docs
+- **PostgreSQL:** `localhost:5432` (credenciales desde `.env`)
+
+### Red y volúmenes
+
+#### Red `app-network`
+- Bridge network para comunicación entre contenedores
+- El backend accede a PostgreSQL usando el hostname `postgres`
+
+#### Volumen `postgres_data`
+- Persiste datos de la base de datos entre reinicios
+- Ubicación: Docker managed volume
+- Eliminar con: `docker-compose down -v` (⚠️ destructivo)
+
+### Variables de entorno en Docker
+
+El archivo `.env` en la raíz del proyecto es leído automáticamente por `docker-compose.yml`:
+
+```yaml
+environment:
+  DB_HOST: postgres          # Hostname del servicio PostgreSQL
+  DB_PORT: 5432              # Puerto interno del contenedor
+  DB_USER: ${DB_USER}        # Desde .env
+  DB_PASSWORD: ${DB_PASSWORD}# Desde .env
+  DB_NAME: ${DB_NAME}        # Desde .env
+  JWT_SECRET: ${JWT_SECRET}  # Desde .env
+```
+
+### Troubleshooting
+
+#### Backend no se conecta a la base de datos
+```bash
+# Verificar que PostgreSQL esté healthy
+docker-compose ps
+
+# Ver logs de PostgreSQL
+docker-compose logs postgres
+
+# Verificar red
+docker network inspect proyectomujeresdigitales_app-network
+```
+
+#### Rebuilds no reflejan cambios
+```bash
+# Forzar rebuild sin cache
+docker-compose build --no-cache backend
+
+# Levantar con rebuild forzado
+docker-compose up --build --force-recreate
+```
+
+#### Limpiar todo y empezar de cero
+```bash
+# Detener contenedores, eliminar volúmenes, imágenes y red
+docker-compose down -v --rmi all
+docker-compose up --build
+```
+
+#### Acceder al contenedor del backend
+```bash
+docker exec -it mujeres_digitales_backend sh
+```
+
+#### Acceder a PostgreSQL desde el host
+```bash
+psql -h localhost -p 5432 -U postgres -d mujeresdigitales
+# (contraseña desde .env)
+```
+
+### Producción
+
+Para despliegue en producción, considera:
+
+1. **Cambiar credenciales:**
+   - Genera JWT_SECRET seguro: `openssl rand -base64 32`
+   - Usa contraseñas robustas para PostgreSQL
+
+2. **Variables de entorno seguras:**
+   - No usar `.env` en producción
+   - Usar Docker secrets o variables de entorno del sistema
+
+3. **Reverse proxy:**
+   - Nginx o Traefik delante del backend
+   - Habilitar HTTPS con Let's Encrypt
+
+4. **Backups de base de datos:**
+   ```bash
+   docker exec mujeres_digitales_db pg_dump -U postgres mujeresdigitales > backup.sql
+   ```
+
+5. **Monitoreo:**
+   - Health checks configurados en docker-compose
+   - Logs centralizados con ELK stack o similar
+
+---
+
 ## 📌 Notas finales
 - No subir archivos `.env` con credenciales reales.
 - Separar BD de desarrollo y pruebas para evitar contaminación de datos.
 - Actualizar este README cuando se agreguen endpoints, módulos o cambie la cobertura.
 - Considerar agregar CI (GitHub Actions) para ejecutar `npm run test:cov` en cada push.
+- Para Docker: nunca commitear `.env`, usar `.env.example` como referencia.
 
 ---
 > Este README es vivo: actualizar roles, endpoints y resultados de pruebas conforme evoluciona el proyecto.
