@@ -29,18 +29,14 @@ export class ProductController {
 	}
 
 	@Get()
-	@UseGuards(AuthGuard)
-	@ApiBearerAuth('JWT-auth')
-	@ApiOperation({ summary: 'Listar productos', description: 'Requiere autenticación. Retorna todos los productos' })
+	@ApiOperation({ summary: 'Listar productos', description: 'Público. Retorna todos los productos' })
 	@ApiResponse({ status: 200, description: 'Lista de productos' })
 	findAll() {
 		return this.productService.findAll();
 	}
 
 	@Get(':id')
-	@UseGuards(AuthGuard)
-	@ApiBearerAuth('JWT-auth')
-	@ApiOperation({ summary: 'Obtener producto por ID', description: 'Requiere autenticación' })
+	@ApiOperation({ summary: 'Obtener producto por ID', description: 'Público' })
 	@ApiResponse({ status: 200, description: 'Producto encontrado' })
 	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
 	@ApiParam({ name: 'id', example: 1 })

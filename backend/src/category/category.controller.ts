@@ -26,18 +26,14 @@ export class CategoryController {
 	}
 
 	@Get()
-	@UseGuards(AuthGuard)
-	@ApiBearerAuth('JWT-auth')
-	@ApiOperation({ summary: 'Listar categorías', description: 'Requiere autenticación. Retorna todas las categorías' })
+	@ApiOperation({ summary: 'Listar categorías', description: 'Público. Retorna todas las categorías' })
 	@ApiResponse({ status: 200, description: 'Lista de categorías' })
 	findAll() {
 		return this.categoryService.findAll();
 	}
 
 	@Get(':id')
-	@UseGuards(AuthGuard)
-	@ApiBearerAuth('JWT-auth')
-	@ApiOperation({ summary: 'Obtener categoría por ID', description: 'Requiere autenticación' })
+	@ApiOperation({ summary: 'Obtener categoría por ID', description: 'Público' })
 	@ApiResponse({ status: 200, description: 'Categoría encontrada' })
 	@ApiResponse({ status: 404, description: 'Categoría no encontrada' })
 	@ApiParam({ name: 'id', example: 1 })
