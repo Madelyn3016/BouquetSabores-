@@ -81,7 +81,7 @@ La API incluye documentación interactiva generada con Swagger.
 
 Una vez iniciado el servidor, accede a:
 ```
-http://localhost:3000/api/docs
+http://localhost:3000/api
 ```
 
 ## 📚 Ejemplos de rutas
