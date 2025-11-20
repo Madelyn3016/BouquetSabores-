@@ -11,7 +11,7 @@ async function bootstrap() {
 
   // Configuración de Swagger
   const config = new DocumentBuilder()
-    .setTitle('Bouquet de Sabores API')
+    .setTitle('💐🍰 Bouquet de Sabores API')
     .setDescription('API REST para e-commerce de tortas personalizadas, postres y arreglos florales')
     .setVersion('1.0')
     .addBearerAuth(
@@ -34,7 +34,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
 }
