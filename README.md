@@ -296,6 +296,6 @@ npm run test:e2e  # End-to-end
 ### Acceso a los servicios
 
 - **API REST (Local):** http://localhost:3000
-- **Documentación Swagger (Local):** http://localhost:3000/api/docs
+- **Documentación Swagger (Local):** http://localhost:3000/api
 - **API REST (Producción):** https://bouquetsabores-production.up.railway.app/
-- **Documentación Swagger (Producción):** https://bouquetsabores-production.up.railway.app/api/docs
+- **Documentación Swagger (Producción):** https://bouquetsabores-production.up.railway.app/api
